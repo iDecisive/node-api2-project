@@ -6,9 +6,9 @@ const server = express();
 
 server.use(express.json());
 
-const PORT = 8000;
-
 server.use("/api/posts", postsRouter);
+
+const PORT = 8000;
 
 
 server.listen(PORT, () => {
