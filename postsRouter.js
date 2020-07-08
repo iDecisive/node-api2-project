@@ -19,7 +19,7 @@ router.post('/', (req, res) => {
 			.then((idObj) => {
 				db.findById(idObj.id)
 					.then((postArr) => {
-						res.status(201).json(postArr[0]);
+						res.status(201).json(postArr);
 					})
 					.catch();
 			})
@@ -67,8 +67,34 @@ router.get('/', (req, res) => {
 			res.json(arr);
 		})
 		.catch((err) => {
-			res.json(err);
+			res
+				.status(500)
+				.json({ error: 'The posts information could not be retrieved.' });
 		});
+});
+
+router.get('/:id', (req, res) => {
+	db.findById(req.params.id)
+		.then((postArr) => {
+			if (!postArr[0]) {
+				res.status(404).json({
+					message: 'The post with the specified ID does not exist.',
+				});
+			} else {
+				res.json(postArr);
+			}
+		})
+		.catch((err) => {
+			res
+				.status(404)
+				.json({ error: 'The post information could not be retrieved.' });
+		});
+});
+
+router.get('/:id/comments', (req, res) => {
+
+    
+
 });
 
 module.exports = router;
