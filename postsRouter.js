@@ -92,9 +92,44 @@ router.get('/:id', (req, res) => {
 });
 
 router.get('/:id/comments', (req, res) => {
+	db.findPostComments(req.params.id)
+		.then((comArr) => {
+			if (!comArr[0]) {
+				res
+					.status(404)
+					.json({ message: 'The post with the specified ID does not exist.' }); //
+			} else {
+				res.json(comArr);
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({
+				error: 'The comments information could not be retrieved.',
+			});
+		});
+});
 
-    
-
+router.delete('/:id', (req, res) => {
+	db.findById(req.params.id)
+		.then((postArr) => {
+			if (!postArr[0]) {
+				res.status(404).json({
+					message: 'The post with the specified ID does not exist.',
+				});
+			} else {
+				const deleted = postArr[0];
+				db.remove(req.params.id)
+					.then(() => {
+						res.json(deleted);
+					})
+					.catch(() => {
+						res.status(500).json({ error: 'The post could not be removed' });
+					});
+			}
+		})
+		.catch((err) => {
+			res.status(500).json({ error: 'findById did not work' });
+		});
 });
 
 module.exports = router;
