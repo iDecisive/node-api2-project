@@ -149,7 +149,14 @@ router.put('/:id', (req, res) => {
 				} else {
                     db.update(req.params.id, req.body).then(wasUpdated => {
                         if (wasUpdated === 1) {
-                            res.status(200).json("updated");
+                            //res.status(200).json("updated");
+                            db.findById(req.params.id).then(postArr2 => {
+                                res.status(200).json(postArr2)
+                            }).catch(() => {
+                                res.status(500).json({ error: 'Could not fetch updated post '});
+                            })
+                        } else {
+                            res.status(500).json({ error: "Could not update post"});
                         }
                     }).catch();
 				}
