@@ -24,11 +24,39 @@ router.post('/', (req, res) => {
 					.catch();
 			})
 			.catch((err) => {
-				res
-					.status(500)
-					.json({
-						error: 'There was an error while saving the post to the database',
+				res.status(500).json({
+					error: 'There was an error while saving the post to the database',
+				});
+			});
+	}
+});
+
+router.post('/:id/comments', (req, res) => {
+	if (!req.body.text) {
+		res
+			.status(400)
+			.json({ errorMessage: 'Please provide text for the comment.' });
+	} else {
+		db.findById(req.params.id)
+			.then(() => {
+				db.insertComment({
+					text: req.body.text,
+					post_id: req.params.id,
+				})
+					.then((comID) => {
+						res.status(201).json(comID);
+					})
+					.catch((err) => {
+						res.status(500).json({
+							error:
+								'There was an error while saving the comment to the database',
+						});
 					});
+			})
+			.catch((err) => {
+				res.status(404).json({
+					message: 'The post with the specified ID does not exist.', //Why is it sending the error catch() for insertComment above instead of this one?
+				});
 			});
 	}
 });
