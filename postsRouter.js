@@ -128,8 +128,40 @@ router.delete('/:id', (req, res) => {
 			}
 		})
 		.catch((err) => {
-			res.status(500).json({ error: 'findById did not work' });
+			res.status(500).json({
+				error: 'Something inside findById().then( xxx ) did not work',
+			});
 		});
+});
+
+router.put('/:id', (req, res) => {
+	if (!req.body.title || !req.body.contents) {
+		res.status(400).json({
+			errorMessage: 'Please provide title and contents for the post.',
+		});
+	} else {
+		db.findById(req.params.id)
+			.then((postArr) => {
+				if (!postArr[0]) {
+					res.status(404).json({
+						message: 'The post with the specified ID does not exist.',
+					});
+				} else {
+                    db.update(req.params.id, req.body).then(wasUpdated => {
+                        if (wasUpdated === 1) {
+                            res.status(200).json("updated");
+                        }
+                    }).catch();
+				}
+			})
+			.catch(() => {
+				res
+					.status(500)
+					.json({
+						error: 'Something inside findById().then( xxx ) did not work',
+					});
+			});
+	}
 });
 
 module.exports = router;
